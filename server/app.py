@@ -5,7 +5,7 @@ import io
 import tempfile
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://sound-bite-v2.vercel.app"]) 
 
 @app.route('/')
 def home():
