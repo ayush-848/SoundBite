@@ -43,7 +43,7 @@ export const AudioUploader: React.FC<AudioUploaderProps> = ({ onAudioProcessed }
     console.log('FormData:', Array.from(formData.entries())); // Debugging
   
     try {
-      const response = await fetch('http://127.0.0.1:5000/process', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/process`, {
         method: 'POST',
         body: formData,
       });
