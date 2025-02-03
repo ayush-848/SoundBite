@@ -7,6 +7,10 @@ import tempfile
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/')
+def home():
+    return "This is SoundBite API"
+
 @app.route('/process', methods=['POST'])
 def process_audio():
     try:
@@ -37,8 +41,5 @@ def process_audio():
     except Exception as e:
         return jsonify({'error': f'Processing error: {str(e)}'}), 500
 
-
-# Export the Flask app for Vercel serverless environment
-def handler(request):
-    with app.app_context():
-        return app.full_dispatch_request()
+if __name__ == '__main__':
+    app.run(debug=True)  # Add this line to start the Flask server
