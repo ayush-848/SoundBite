@@ -1,7 +1,10 @@
 import { motion } from "framer-motion";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
+import { AudioUploader } from "./AudioUploader";
 
 export const Hero = (): ReactElement => {
+  const [processedAudio, setProcessedAudio] = useState<string | null>(null);
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-gray-900">
       {/* Background Elements */}
@@ -34,7 +37,7 @@ export const Hero = (): ReactElement => {
         }}
       />
 
-      {/* Hero Content - Wrapped in max-w-6xl */}
+      {/* Hero Content */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-24 sm:py-32 text-center">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -128,10 +131,10 @@ export const Hero = (): ReactElement => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          {[
-            { title: "Upload", content: "Drag & drop your audio files or import from cloud storage" },
-            { title: "Edit", content: "Trim, enhance, and perfect your audio with smart tools" },
-            { title: "Export", content: "Save in any format or share directly to platforms" },
+          {[ 
+            { title: "Upload", content: "Drag & drop your audio files or import from cloud storage" }, 
+            { title: "Edit", content: "Trim, enhance, and perfect your audio with smart tools" }, 
+            { title: "Export", content: "Save in any format or share directly to platforms" }
           ].map((step, index) => (
             <div key={step.title} className="p-6 bg-gray-800/30 rounded-xl">
               <div className="text-teal-400 text-2xl mb-2">0{index + 1}</div>
@@ -140,6 +143,19 @@ export const Hero = (): ReactElement => {
             </div>
           ))}
         </motion.div>
+
+        {/* Audio File Uploader */}
+        <div className="mt-16">
+          <h1 className="text-2xl text-white mb-4">Upload Audio File</h1>
+          <AudioUploader onAudioProcessed={setProcessedAudio} />
+
+          {processedAudio && (
+            <div className="mt-6 text-white">
+              <p>Processed Audio:</p>
+              <audio controls src={processedAudio} className="w-full"></audio>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

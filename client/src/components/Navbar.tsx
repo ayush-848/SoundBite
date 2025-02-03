@@ -36,8 +36,8 @@ export const Navbar = () => {
                 <motion.a
                   key={item.name}
                   href={item.href}
-                  className="relative text-gray-300 hover:text-white transition-colors"
-                  whileHover={{ scale: 1.05 }}
+                  className="relative text-gray-300 transition-colors"
+                  whileHover={{ scale: 1.02 }}
                 >
                   <span className="relative">
                     {item.name}
