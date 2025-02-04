@@ -3,9 +3,16 @@ from flask_cors import CORS
 from moviepy.editor import AudioFileClip, vfx
 import io
 import tempfile
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
-CORS(app, origins=["https://sound-bite-v2.vercel.app"]) 
+
+# Fix proxy issues and allow larger file uploads
+app.wsgi_app = ProxyFix(app.wsgi_app)
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB limit
+
+
+CORS(app, origins=["https://sound-bite-v2.vercel.app/"]) 
 
 @app.route('/')
 def home():
@@ -20,12 +27,12 @@ def process_audio():
         file = request.files['file']
         speed_factor = float(request.form.get('speed', 1.0))
 
-        # Save uploaded file to a temporary file (required for AudioFileClip)
-        with tempfile.NamedTemporaryFile(delete=True, suffix=".mp3") as temp_audio:
-            file.save(temp_audio.name)  # Save the uploaded file
-            temp_audio.flush()  # Ensure data is written
+        # Save uploaded file to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_audio:
+            file.save(temp_audio.name)
+            temp_audio.flush()
 
-            # Load audio file from temporary storage
+            # Load audio file
             clip = AudioFileClip(temp_audio.name)
 
             # Apply speed effect
@@ -33,7 +40,7 @@ def process_audio():
 
             # Save processed audio to memory
             output_buffer = io.BytesIO()
-            processed_clip.write_audiofile(output_buffer, codec='mp3')
+            processed_clip.write_audiofile(output_buffer, codec='mp3', fps=44100)
             output_buffer.seek(0)
 
             return send_file(output_buffer, as_attachment=True, download_name="processed_audio.mp3", mimetype="audio/mp3")
@@ -42,4 +49,4 @@ def process_audio():
         return jsonify({'error': f'Processing error: {str(e)}'}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)  # Add this line to start the Flask server
+    app.run(debug=True)
